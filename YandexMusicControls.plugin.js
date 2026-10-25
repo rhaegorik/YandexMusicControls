@@ -2,7 +2,7 @@
  * @name YandexMusicControls
  * @description Панель управления Яндекс Музыкой в стиле SpotifyControls.
  * @author rhaegorik
- * @version 5.3.0
+ * @version 1.0.0
  */
 
 const css = `
@@ -168,7 +168,7 @@ module.exports = class YandexMusicControls {
         this.reactRoot = null;
         this.pollInterval = null;
         this.isMaximized = false;
-        this.lastManualAction = 0; // Защита от перезаписи статуса
+        this.lastManualAction = 0;
         
         this.state = {
             title: "Яндекс Музыка",
@@ -182,7 +182,7 @@ module.exports = class YandexMusicControls {
     }
 
     start() {
-        this.Api.Logger.info("Плагин запущен (v5.3.0)");
+        this.Api.Logger.info("Плагин запущен (v5.4.0)");
         BdApi.DOM.addStyle("ym-controls-styles", css);
         this.startInjecting();
         this.startPolling();
@@ -218,7 +218,6 @@ module.exports = class YandexMusicControls {
                 if (ym) {
                     const newTitle = ym.details || ym.name || "Яндекс Музыка";
                     
-                    // Проверяем, не сменился ли трек (сбрасываем защиту)
                     if (this.state.title !== newTitle) {
                         this.lastManualAction = 0;
                     }
@@ -240,7 +239,6 @@ module.exports = class YandexMusicControls {
                         this.state.cover = null;
                     }
 
-                    // --- УМНАЯ ПРОВЕРКА ПАУЗЫ ---
                     let rpcIsPlaying = true;
                     
                     if (ym.timestamps && ym.timestamps.start) {
@@ -248,30 +246,26 @@ module.exports = class YandexMusicControls {
                         this.state.position = Math.max(0, now - ym.timestamps.start);
                         if (ym.timestamps.end) {
                             this.state.duration = ym.timestamps.end - ym.timestamps.start;
-                            // Если время вышло за пределы трека — он остановлен
                             if (this.state.position > this.state.duration) {
                                 rpcIsPlaying = false;
                             }
                         }
                     } else {
-                        // Если RPC не прислал тайминги — музыка на паузе
                         rpcIsPlaying = false;
                     }
 
-                    // Если в тексте есть слово "Pause" или "⏸"
                     if ((ym.state && ym.state.toLowerCase().includes("pause")) || 
                         (ym.details && ym.details.toLowerCase().includes("pause"))) {
                         rpcIsPlaying = false;
                     }
 
-                    // Применяем статус с учетом ручной паузы (защита 3 секунды)
                     const isManual = (Date.now() - this.lastManualAction) < 3000;
                     if (!isManual) {
                         this.state.isPlaying = rpcIsPlaying;
                     }
-                    // -----------------------------
                     
                 } else {
+                    // Активности нет — полностью скрываем панель
                     this.state.hasData = false;
                     this.state.title = "Яндекс Музыка";
                     this.state.artist = "Не играет";
@@ -321,6 +315,9 @@ module.exports = class YandexMusicControls {
                 this.rootElement.addEventListener("ym-update", update);
                 return () => this.rootElement.removeEventListener("ym-update", update);
             }, []);
+
+            // ГЛАВНОЕ ИЗМЕНЕНИЕ: Если данных нет — полностью скрываем панель
+            if (!this.state.hasData) return null;
 
             const progress = this.state.duration > 0 ? (this.state.position / this.state.duration) * 100 : 0;
             
@@ -393,9 +390,7 @@ module.exports = class YandexMusicControls {
 
     async sendCmd(action) {
         if (action === "playpause") {
-            // Мгновенно меняем иконку
             this.state.isPlaying = !this.state.isPlaying;
-            // Ставим защиту, чтобы RPC не перебил кнопку обратно (на 3 секунды)
             this.lastManualAction = Date.now(); 
             this.updateUI();
         }
@@ -412,6 +407,6 @@ module.exports = class YandexMusicControls {
     }
 
     getSettingsPanel() {
-        return "YandexMusicControls v5.3.0: исправлено отображение паузы.";
+        return "YandexMusicControls v5.4.0: панель скрывается при отсутствии музыки.";
     }
 };
