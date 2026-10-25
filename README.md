@@ -3,8 +3,7 @@
 Плагин для BetterDiscord, который добавляет элегантную панель управления Яндекс Музыкой прямо над вашим профилем в Discord. Дизайн полностью повторяет популярный плагин SpotifyControls.
 
 ![Yandex Music Controls Preview]
-https://github.com/rhaegorik/
-YandexMusicControls/blob/main/assets/preview.png <!-- Можете добавить сюда скриншот панели -->
+https://github.com/rhaegorik/YandexMusicControls/blob/main/assets/preview.png <!-- Можете добавить сюда скриншот панели -->
 
 ## ✨ Возможности
 * 🎨 **Стильный интерфейс**: Панель с обложкой трека, названием, исполнителем и таймлайном.
