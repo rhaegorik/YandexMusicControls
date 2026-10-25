@@ -1,6 +1,7 @@
 /**
  * @name YandexMusicControls
  * @description Панель управления Яндекс Музыкой в стиле SpotifyControls.
+ * @author rhaegorik
  * @version 5.3.0
  */
 
