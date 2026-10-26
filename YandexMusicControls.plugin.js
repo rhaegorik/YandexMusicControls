@@ -3,6 +3,7 @@
  * @description Панель управления Яндекс Музыкой в стиле SpotifyControls.
  * @author rhaegorik
  * @version 1.1.0
+ * @source https://github.com/rhaegorik/YandexMusicControls
  */
 
 const css = `
