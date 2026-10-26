@@ -2,7 +2,7 @@
  * @name YandexMusicControls
  * @description Панель управления Яндекс Музыкой в стиле SpotifyControls.
  * @author rhaegorik
- * @version 1.0.0
+ * @version 1.1.0
  */
 
 const css = `
@@ -17,87 +17,108 @@ const css = `
     background: var(--background-secondary);
     border-bottom: 1px solid var(--background-modifier-accent);
     border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-    padding: 0 8px;
+    padding: 8px;
     order: -1;
     margin: 0;
 }
-.ym-controls-container.maximized { padding-top: 8px; }
-.ym-controls-container.with-timeline { padding-top: 8px; }
+
 .ym-controls-inner {
     display: flex;
     align-items: center;
     font-size: 14px;
     width: 100%;
+    gap: 10px;
 }
-.ym-controls-inner.maximized { flex-direction: column; }
+
+/* Центрируем всё при развороте */
+.ym-controls-inner.maximized {
+    flex-direction: column;
+    align-items: center;
+}
+
 .ym-controls-cover-wrapper {
     position: relative;
-    width: 32px;
-    min-width: 32px;
-    height: 32px;
-    min-height: 32px;
-    margin-right: 8px;
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    min-height: 40px;
     border-radius: 4px;
     overflow: hidden;
     transition: border-radius .3s ease, margin .3s ease, width .3s ease, height .3s ease;
     cursor: pointer;
+    flex-shrink: 0;
 }
+
+/* Фиксированный квадрат при развороте, чтобы картинка не плющилась */
 .ym-controls-inner.maximized .ym-controls-cover-wrapper {
-    width: calc(100% + 16px);
-    height: 100%;
-    margin: 0 0 8px 0;
-    border-radius: 0;
+    width: 180px;
+    height: 180px;
+    min-width: 180px;
+    min-height: 180px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
+
 .ym-controls-cover {
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    color: var(--text-strong);
+    object-fit: cover; /* Заставляет картинку заполнить квадрат без искажений */
+    color: #ffffff;
 }
+
 .ym-controls-cover-placeholder {
     display: flex;
     align-items: center;
     justify-content: center;
     background: var(--background-tertiary);
-    font-size: 18px;
+    font-size: 20px;
 }
+
 .ym-controls-details {
     flex-grow: 1;
-    margin-right: 4px;
     min-width: 0;
     user-select: text;
-}
-.ym-controls-inner.maximized .ym-controls-details {
-    margin: 0 0 4px 0;
+    text-align: left;
     width: 100%;
-    text-align: center;
 }
+
+.ym-controls-inner.maximized .ym-controls-details {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
 .ym-controls-song {
     font-weight: 500;
-    color: var(--text-strong);
+    color: #ffffff;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size: 14px;
 }
+
 .ym-controls-artist {
     font-weight: 300;
-    color: var(--text-subtle);
+    color: #b9bbbe;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    line-height: 13px;
+    font-size: 12px;
 }
+
 .ym-controls-buttons {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 15px;
+    justify-content: center;
 }
+
 .ym-controls-btn {
     background: none;
     border: none;
-    color: #ffffff;
-    opacity: 0.7;
+    color: #ffffff; 
+    opacity: 0.8;
     cursor: pointer;
     padding: 0;
     display: flex;
@@ -105,30 +126,53 @@ const css = `
     justify-content: center;
     transition: all 0.2s ease;
 }
+
 .ym-controls-btn:hover {
-    color: #ff3333;
     opacity: 1;
     transform: scale(1.1);
 }
-.ym-controls-btn:active { transform: scale(0.9); }
-.ym-controls-btn svg { width: 20px; height: 20px; fill: currentColor; }
-.ym-controls-btn.play-pause { opacity: 1; }
-.ym-controls-btn.play-pause svg { width: 24px; height: 24px; }
-.ym-controls-timeline { margin: 6px 0 4px 0; }
+
+.ym-controls-btn:active { 
+    transform: scale(0.9); 
+}
+
+.ym-controls-btn svg { 
+    width: 22px; 
+    height: 22px; 
+    fill: currentColor; 
+}
+
+.ym-controls-btn.play-pause svg { 
+    width: 28px; 
+    height: 28px; 
+}
+
+.ym-controls-timeline { 
+    margin-top: 12px; 
+    width: 100%;
+}
+
 .ym-controls-bar-container {
     position: relative;
     border-radius: 2px;
-    background-color: rgba(79, 84, 92, 0.16);
+    background-color: rgba(255, 255, 255, 0.1);
     height: 4px;
     margin-bottom: 4px;
+    cursor: pointer;
 }
+
 .ym-controls-bar-fill {
     border-radius: 2px;
     height: 100%;
     min-width: 4px;
-    background: var(--text-subtle);
+    background: #b9bbbe;
+    transition: background 0.2s ease;
 }
-.ym-controls-bar-container:hover .ym-controls-bar-fill { background: #ff3333; }
+
+.ym-controls-bar-container:hover .ym-controls-bar-fill { 
+    background: #ffffff; 
+}
+
 .ym-controls-bar-grabber {
     display: none;
     position: absolute;
@@ -137,17 +181,21 @@ const css = `
     height: 12px;
     margin-top: -4px;
     margin-left: -6px;
-    background: var(--text-subtle);
+    background: #ffffff;
     border-radius: 50%;
     pointer-events: none;
 }
-.ym-controls-bar-container:hover .ym-controls-bar-grabber { display: block; }
+
+.ym-controls-bar-container:hover .ym-controls-bar-grabber { 
+    display: block; 
+}
+
 .ym-controls-bar-text {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-size: 10px;
-    color: var(--text-subtle);
+    font-size: 11px;
+    color: #b9bbbe;
     font-weight: 500;
 }
 `;
@@ -182,7 +230,7 @@ module.exports = class YandexMusicControls {
     }
 
     start() {
-        this.Api.Logger.info("Плагин запущен (v5.4.0)");
+        this.Api.Logger.info("Плагин запущен (v5.7.0)");
         BdApi.DOM.addStyle("ym-controls-styles", css);
         this.startInjecting();
         this.startPolling();
@@ -265,7 +313,6 @@ module.exports = class YandexMusicControls {
                     }
                     
                 } else {
-                    // Активности нет — полностью скрываем панель
                     this.state.hasData = false;
                     this.state.title = "Яндекс Музыка";
                     this.state.artist = "Не играет";
@@ -316,7 +363,6 @@ module.exports = class YandexMusicControls {
                 return () => this.rootElement.removeEventListener("ym-update", update);
             }, []);
 
-            // ГЛАВНОЕ ИЗМЕНЕНИЕ: Если данных нет — полностью скрываем панель
             if (!this.state.hasData) return null;
 
             const progress = this.state.duration > 0 ? (this.state.position / this.state.duration) * 100 : 0;
@@ -407,6 +453,6 @@ module.exports = class YandexMusicControls {
     }
 
     getSettingsPanel() {
-        return "YandexMusicControls v5.4.0: панель скрывается при отсутствии музыки.";
+        return "YandexMusicControls v5.7.0: Исправлена кривизна картинки.";
     }
 };
